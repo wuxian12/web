@@ -1,0 +1,12 @@
+{
+    "name": "wuxian/web",
+    "description": "one web framework",
+    "type": "project",
+    "authors": [
+        {
+            "name": "wuxian12",
+            "email": "827091704@qq.com"
+        }
+    ],
+    "require": {}
+}
