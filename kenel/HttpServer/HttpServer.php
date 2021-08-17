@@ -29,11 +29,8 @@ class HttpServer
 		        $response->end(implode('', $allowedMethods) );
 		        break;
 		    case \FastRoute\Dispatcher::FOUND:
-		    	$this->initCoreMiddleware($request);
-		        $handler = $routeInfo[1];
-		        $vars = $routeInfo[2];
-		        $arr = explode('@', $handler);
-		        $res = (new $arr[0])->{$arr[1]}();
+		    	$request->dispatch = $routeInfo;
+		    	$res = $this->initCoreMiddleware($request);var_dump($res);
 		        $response->end($res);
 		        break;
 		}
@@ -42,16 +39,21 @@ class HttpServer
 	public function initCoreMiddleware($request)
 	{
 		$middles = require BASE_PATH. '/config/autoload/middles.php';
-		if(!empty($middles)){
-			$handle = array_reduce(array_reverse($middles) ,[$this,'carry']);
-			$handle($request);
-		}
+		$middles[] = \Kenel\HttpServer\HttpMiddle::class;
+		$handle = array_reduce(array_reverse($middles) ,[$this,'carry']);
+		return $handle($request);
+		
 	}
 
 	public function carry($carry, $item)
 	{
 		return function($request) use ($carry, $item){
-			call_user_func($item,$request, $carry);
+			if($item instanceof Closure){
+				return call_user_func($item,$request, $carry);
+			}else{
+				return call_user_func([new $item,'handle'],$request, $carry);
+			}
+			
 		};
 	}
 

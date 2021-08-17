@@ -5,6 +5,6 @@ class HealthController
 {
 	public function health()
 	{
-		return 123;
+		return 456;
 	}
 }
